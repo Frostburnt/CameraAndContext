@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://dcyvuxmf01hb1"]
+
+[ext_resource type="Script" uid="uid://1nk5l8l4vu0a" path="res://cameraAndContext/prefabs/PlayerController.cs" id="1_8ns54"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_b3dhu"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_8ns54"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1ve0q"]
+
+[node name="PlayerController" type="Node3D"]
+script = ExtResource("1_8ns54")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_b3dhu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D"]
+transform = Transform3D(0.498321, 0, 0, 0, 0.321902, 0, 0, 0, 0.571474, 0, 0.3, -0.313636)
+mesh = SubResource("BoxMesh_8ns54")
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_1ve0q")
+
+[node name="CameraHelper" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
