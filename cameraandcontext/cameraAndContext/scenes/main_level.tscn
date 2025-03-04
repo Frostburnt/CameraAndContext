@@ -1,42 +1,95 @@
-[gd_scene load_steps=5 format=3 uid="uid://bs1lngi7ybvsi"]
+[gd_scene load_steps=10 format=3 uid="uid://bs1lngi7ybvsi"]
 
 [ext_resource type="PackedScene" uid="uid://dcyvuxmf01hb1" path="res://cameraAndContext/prefabs/PlayerController.tscn" id="1_g0a66"]
 [ext_resource type="Script" uid="uid://dn4bxmagj2da" path="res://cameraAndContext/scripts/CameraTarget.cs" id="2_mva5q"]
 [ext_resource type="Script" uid="uid://c0doathlxju6x" path="res://cameraAndContext/scripts/MyCamera.cs" id="3_mva5q"]
 
 [sub_resource type="Curve" id="Curve_mva5q"]
-_data = [Vector2(0, 0.47191), 0.0, 1.19181, 0, 0, Vector2(1, 0.853933), 0.244654, 0.0, 0, 0]
+_data = [Vector2(0, 0.448607), 0.0, -0.0399662, 0, 0, Vector2(1, 0.898876), 0.197566, 0.0, 0, 0]
 point_count = 2
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_mva5q"]
+
+[sub_resource type="Environment" id="Environment_mva5q"]
+background_mode = 1
+background_color = Color(0.410057, 0.523185, 0.74832, 1)
+ambient_light_color = Color(0.1771, 0.272586, 0.458542, 1)
+ambient_light_energy = 3.05
+tonemap_mode = 4
+ssao_enabled = true
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ny233"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mva5q"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ny233"]
 
 [node name="MainLevel" type="Node3D"]
 
 [node name="PlayerController" parent="." instance=ExtResource("1_g0a66")]
 
-[node name="MeshInstance3D" parent="PlayerController" index="0"]
-layers = 3
+[node name="CharacterBody3D" parent="PlayerController" index="0" node_paths=PackedStringArray("helper")]
+helper = NodePath("../../CameraPivot/Camera3D")
 
-[node name="CameraManager" type="Node3D" parent="." node_paths=PackedStringArray("PlayerTarget", "CurrentTarget", "Pivot")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+[node name="CameraManager" type="Node3D" parent="." node_paths=PackedStringArray("PlayerTarget", "CurrentTarget", "Pivot", "PCPivot", "player")]
+transform = Transform3D(1.47, 0, 2.57023e-07, 0, 1.47, 0, -2.57023e-07, 0, 1.47, 0, 1, 0)
 script = ExtResource("2_mva5q")
-PlayerTarget = NodePath("../PlayerController/CameraHelper")
-CurrentTarget = NodePath("../PlayerController/CameraHelper")
+PlayerTarget = NodePath("../PlayerController/CharacterBody3D/CameraHelper")
+CurrentTarget = NodePath("../PlayerController/CharacterBody3D/CameraHelper")
 Pivot = NodePath("../CameraPivot")
 InterpolationRate = SubResource("Curve_mva5q")
-qOffset = 1.0
-iOffset = 1.0
+PCPivot = NodePath("../PlayerController/CharacterBody3D/Pivot")
+qOffset = 3.0
+iOffset = 8.0
+player = NodePath("../PlayerController/CharacterBody3D")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CameraManager"]
+transform = Transform3D(0.657904, 0, -0.741777, 0, 0.012, 0, 0.727683, 0, 0.670647, 0, 0, 0)
+mesh = SubResource("CapsuleMesh_mva5q")
 
 [node name="CameraPivot" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot" node_paths=PackedStringArray("MyTarget")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
-fov = 70.0
+transform = Transform3D(0.999998, -0.00204788, 0.00013957, 0.00170783, 0.867814, 0.496887, -0.00113869, -0.496886, 0.867815, 0.000242231, 4.95262, 9.04274)
+environment = SubResource("Environment_mva5q")
+attributes = SubResource("CameraAttributesPractical_ny233")
+fov = 73.0
 script = ExtResource("3_mva5q")
 MyTarget = NodePath("../../CameraManager")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.53388, 0.84556, 0, -0.465662, 0.294015, 0.834694, 0.705784, -0.445627, 0.550714, 0, 0, 0)
+transform = Transform3D(0.668956, 0.077715, 0.739228, -0.357106, 0.905828, 0.227928, -0.6519, -0.416456, 0.633712, 0, 0, 0)
 light_color = Color(0.753033, 0.728704, 0.604209, 1)
+light_energy = 1.325
 shadow_enabled = true
+shadow_blur = 1.237
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1456.94, 0, 0, 0, 1, 0, 0, 0, 356.729, 0, -0.7, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("BoxMesh_ny233")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="."]
+transform = Transform3D(49.0734, 0, 0, 0, 11.7281, 0, 0, 0, -15.0781, 39.4703, 4.33644, 3.94652)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
+shape = SubResource("BoxShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D2"]
+mesh = SubResource("BoxMesh_ny233")
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="."]
+transform = Transform3D(49.0734, 0, 0, 0, 11.7281, 0, 0, 0, -15.0781, -40.8406, 4.33644, 3.94652)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D3"]
+shape = SubResource("BoxShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D3"]
+mesh = SubResource("BoxMesh_ny233")
 
 [editable path="PlayerController"]

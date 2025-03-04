@@ -11,6 +11,8 @@ public Node3D Pivot;
 [Export]
 Curve InterpolationRate;
 [Export]
+public Node3D PCPivot;
+[Export]
 public float qOffset;
 [Export]
 public float iOffset;
@@ -27,6 +29,7 @@ PlayerController player;
             //slerp angle towards character velocity vector pass this to camera 
             //add a max vertical clamp, maybe changed based on the normal vector under the players feet
             //maybe increase FOV based on distance?
+            this.Position = CurrentTarget.GlobalPosition;
             Vector3 a = Pivot.Position;
             Vector3 b = Position;
             Vector3 difference = a-b;
@@ -35,7 +38,12 @@ PlayerController player;
             float iWeight = InterpolationRate.Sample(distance ) * iOffset* (float)Delta;
             Pivot.Position = Pivot.Position.Lerp(Position, iWeight);
             //if no input
-            if(player.OrbitVector.Length() < 0.001f){
+            
+
+
+            if(player.OrbitVector.Length() < 0.03f && player.Velocity.Length()!= 0){
+                GlobalBasis = PCPivot.GlobalBasis;
+                
                 float qWeight = InterpolationRate.Sample(Pivot.Quaternion.AngleTo(Quaternion)) * qOffset* (float)Delta;//replace this.quaternion with a new one based on the velocity vector
                 Pivot.Quaternion = Pivot.Quaternion.Slerp(Quaternion, qWeight);
             }

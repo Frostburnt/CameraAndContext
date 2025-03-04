@@ -1,29 +1,47 @@
-[gd_scene load_steps=5 format=3 uid="uid://dcyvuxmf01hb1"]
+[gd_scene load_steps=8 format=3 uid="uid://dcyvuxmf01hb1"]
 
 [ext_resource type="Script" uid="uid://1nk5l8l4vu0a" path="res://cameraAndContext/prefabs/PlayerController.cs" id="1_8ns54"]
+
+[sub_resource type="Curve" id="Curve_8ns54"]
+_data = [Vector2(0, 0.269663), 0.0, 0.160703, 0, 0, Vector2(1, 1), 1.16415, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_1ve0q"]
+_data = [Vector2(0, 0), 0.0, 0.320543, 0, 0, Vector2(1, 1), 2.61857, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_x8ut3"]
+_data = [Vector2(0, 0), 0.0, 4.60211, 0, 0, Vector2(0.71564, 1), 0.0, 0.0, 0, 0, Vector2(0.759259, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1ve0q"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_b3dhu"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_8ns54"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1ve0q"]
-
 [node name="PlayerController" type="Node3D"]
-script = ExtResource("1_8ns54")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CapsuleMesh_b3dhu")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D"]
-transform = Transform3D(0.498321, 0, 0, 0, 0.321902, 0, 0, 0, 0.571474, 0, 0.3, -0.313636)
-mesh = SubResource("BoxMesh_8ns54")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+script = ExtResource("1_8ns54")
+InputRampCamera = SubResource("Curve_8ns54")
+InputRampMovement = SubResource("Curve_1ve0q")
+JumpC = SubResource("Curve_x8ut3")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_1ve0q")
 
-[node name="CameraHelper" type="Node3D" parent="."]
+[node name="Pivot" type="Node3D" parent="CharacterBody3D"]
+
+[node name="PlayerCapsule" type="MeshInstance3D" parent="CharacterBody3D/Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_b3dhu")
+skeleton = NodePath("../../..")
+
+[node name="PlayerVisor" type="MeshInstance3D" parent="CharacterBody3D/Pivot/PlayerCapsule"]
+transform = Transform3D(0.498321, 0, 0, 0, 0.321902, 0, 0, 0, 0.571474, 0, 0.3, -0.313636)
+mesh = SubResource("BoxMesh_8ns54")
+
+[node name="CameraHelper" type="Node3D" parent="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
