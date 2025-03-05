@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://dcyvuxmf01hb1"]
 
-[ext_resource type="Script" uid="uid://1nk5l8l4vu0a" path="res://cameraAndContext/prefabs/PlayerController.cs" id="1_8ns54"]
+[ext_resource type="Script" uid="uid://1nk5l8l4vu0a" path="res://cameraAndContext/scripts/PlayerController.cs" id="1_8ns54"]
 
 [sub_resource type="Curve" id="Curve_8ns54"]
 _data = [Vector2(0, 0.269663), 0.0, 0.160703, 0, 0, Vector2(1, 1), 1.16415, 0.0, 0, 0]

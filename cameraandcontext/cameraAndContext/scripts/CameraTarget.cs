@@ -102,32 +102,49 @@ float yRot, xRot;
             //assume we can only have one ray collision
             //ray 3 is middle ray, this is used for checking for camera collisions
             bool found = false;
-            Variant Obstacle = new Variant(); 
-            Vector3 ObjPosition;
+            Vector3 Obstacle = new Vector3(0,0,0);
+            Transform3D Temp = Pivot.Transform;
+            //sweep from left to right... might change this to get the closest obstacle instead of the 5
             if(ray1.IsColliding()){
-               Obstacle = ray1.GetCollider();
-               found = true;
+            Obstacle = ray1.GetCollisionPoint();
+            found = true;
             }
             if(ray2.IsColliding()){
-                Obstacle = ray2.GetCollider();
-                found = true;
+            Obstacle = ray2.GetCollisionPoint();
+            found = true;
             }
             if(ray4.IsColliding()){
-                Obstacle = ray4.GetCollider();
-                found = true;
-            }
+                Obstacle = ray4.GetCollisionPoint();
+            found = true;}
             if(ray5.IsColliding()){
-                Obstacle = ray5.GetCollider();
-                found = true;
+            found = true;
+            Obstacle = ray5.GetCollisionPoint();
             }
             if(found){
-                ObjPosition = ((StaticBody3D)Obstacle).GlobalPosition;
+                Temp = Temp.LookingAt(Obstacle);
+                Pivot.Quaternion = Pivot.Quaternion.Slerp(Temp.Basis.GetRotationQuaternion(), (float)Delta * 0.2f);
+                Pivot.Rotation = new (0, Pivot.Rotation.Y, 0);          //pivot should only rotate on the Y axis
+
             }
-            else{
-                return;
-            }
-            Transform3D Temp = Pivot.Transform;
-            Temp = Temp.LookingAt(ObjPosition);
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+            
+            // Obstacle = new Variant(); 
+            //Vector3 ObjPosition;
+    
+            
+            
 
 
 
@@ -136,7 +153,7 @@ float yRot, xRot;
 
 
 
-            GD.Print(ObjPosition);
+            //GD.Print(ObjPosition);
             //then we move camera based on relative position to that object
             // if(ray1.IsColliding()){//left big
             //     Transform3D Temp = Pivot.Transform;
