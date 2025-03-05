@@ -36,18 +36,19 @@ public partial class PlayerController : CharacterBody3D{
         PollInput();
 
 
-        Velocity = new Vector3 (InputVector.X, Velocity.Y/4, InputVector.Y) * 4;           //an acceleration based approach would be nicer
-    
+        Velocity = new Vector3 (InputVector.X, Velocity.Y/10, InputVector.Y) * 10;           //an acceleration based approach would be nicer
+        
         this.Velocity = this.Velocity.Rotated(Vector3.Up, LastValidAngle); 
        
 
         Vector2 xzVelocity = new Vector2(InputVector.X, InputVector.Y);
+        if(OrbitAmount > 0 || xzVelocity.Length()== 0){
+            LastValidAngle = helper.GlobalRotation.Y;
+        }
         if(xzVelocity.Length()!= 0){
             LookAt(Position + new Vector3 (Velocity.X, 0, Velocity.Z) * 10);       //just 1:1 the model faces where we're heading
         }
-        else{
-            LastValidAngle = helper.GlobalRotation.Y;
-        }
+       
         
         HandleJumpInput();
         FallChecker();

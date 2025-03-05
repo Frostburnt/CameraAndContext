@@ -7,12 +7,12 @@ _data = [Vector2(0, 0.269663), 0.0, 0.160703, 0, 0, Vector2(1, 1), 1.16415, 0.0,
 point_count = 2
 
 [sub_resource type="Curve" id="Curve_1ve0q"]
-_data = [Vector2(0, 0), 0.0, 0.320543, 0, 0, Vector2(1, 1), 2.61857, 0.0, 0, 0]
+_data = [Vector2(0.0601852, 0), 2.61857, 0.0, 0, 0, Vector2(1, 1), 2.61857, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="Curve" id="Curve_x8ut3"]
-_data = [Vector2(0, 0), 0.0, 4.60211, 0, 0, Vector2(0.71564, 1), 0.0, 0.0, 0, 0, Vector2(0.759259, 0), 0.0, 0.0, 0, 0]
-point_count = 3
+_data = [Vector2(0.0324074, 0), 0.0, 2.62921, 0, 0, Vector2(0.0462963, 0.224719), 0.0, 0.0, 0, 0, Vector2(0.71564, 1), 0.369273, 0.369273, 0, 0, Vector2(0.759259, 0), 0.0, 0.0, 0, 0]
+point_count = 4
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1ve0q"]
 

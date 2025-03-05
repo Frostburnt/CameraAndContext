@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bs1lngi7ybvsi"]
+[gd_scene load_steps=13 format=3 uid="uid://bs1lngi7ybvsi"]
 
 [ext_resource type="PackedScene" uid="uid://dcyvuxmf01hb1" path="res://cameraAndContext/prefabs/PlayerController.tscn" id="1_g0a66"]
 [ext_resource type="Script" uid="uid://dn4bxmagj2da" path="res://cameraAndContext/scripts/CameraTarget.cs" id="2_mva5q"]
@@ -24,24 +24,39 @@ ssao_enabled = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_ny233"]
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_mva5q"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ny233"]
+albedo_color = Color(0.68303, 0.398843, 0.717107, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_i4phc"]
+
 [node name="MainLevel" type="Node3D"]
 
 [node name="PlayerController" parent="." instance=ExtResource("1_g0a66")]
 
 [node name="CharacterBody3D" parent="PlayerController" index="0" node_paths=PackedStringArray("helper")]
-helper = NodePath("../../CameraPivot/Camera3D")
+helper = NodePath("../../CameraPivot/UpDownPivot/Camera3D")
 
-[node name="CameraManager" type="Node3D" parent="." node_paths=PackedStringArray("PlayerTarget", "CurrentTarget", "Pivot", "PCPivot", "player")]
+[node name="CameraManager" type="Node3D" parent="." node_paths=PackedStringArray("PlayerTarget", "CurrentTarget", "Pivot", "UDPivot", "PCPivot", "player", "ray1", "ray2", "ray3", "ray4", "ray5")]
 transform = Transform3D(1.47, 0, 2.57023e-07, 0, 1.47, 0, -2.57023e-07, 0, 1.47, 0, 1, 0)
 script = ExtResource("2_mva5q")
 PlayerTarget = NodePath("../PlayerController/CharacterBody3D/CameraHelper")
 CurrentTarget = NodePath("../PlayerController/CharacterBody3D/CameraHelper")
 Pivot = NodePath("../CameraPivot")
+UDPivot = NodePath("../CameraPivot/UpDownPivot")
 InterpolationRate = SubResource("Curve_mva5q")
 PCPivot = NodePath("../PlayerController/CharacterBody3D/Pivot")
 qOffset = 3.0
 iOffset = 8.0
 player = NodePath("../PlayerController/CharacterBody3D")
+ray1 = NodePath("../CameraPivot/Node3D/Ray1")
+ray2 = NodePath("../CameraPivot/Node3D/Ray2")
+ray3 = NodePath("../CameraPivot/Node3D/Ray3")
+ray4 = NodePath("../CameraPivot/Node3D/Ray4")
+ray5 = NodePath("../CameraPivot/Node3D/Ray5")
+ySens = 2.0
+xSens = 2.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CameraManager"]
 transform = Transform3D(0.657904, 0, -0.741777, 0, 0.012, 0, 0.727683, 0, 0.670647, 0, 0, 0)
@@ -50,13 +65,49 @@ mesh = SubResource("CapsuleMesh_mva5q")
 [node name="CameraPivot" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
-[node name="Camera3D" type="Camera3D" parent="CameraPivot" node_paths=PackedStringArray("MyTarget")]
-transform = Transform3D(0.999998, -0.00204788, 0.00013957, 0.00170783, 0.867814, 0.496887, -0.00113869, -0.496886, 0.867815, 0.000242231, 4.95262, 9.04274)
+[node name="Node3D" type="Node3D" parent="CameraPivot"]
+transform = Transform3D(0.999998, -0.00204788, 0.000139574, 0.00170783, 0.867814, 0.496887, -0.00113869, -0.496886, 0.867815, 0.00149658, 9.41822, 16.8419)
+
+[node name="Ray1" type="RayCast3D" parent="CameraPivot/Node3D"]
+transform = Transform3D(0.913546, 0.406737, -1.78115e-08, 8.9407e-08, -5.96046e-08, -1, -0.406737, 0.913546, 1.49012e-07, -0.251007, -0.0052042, 0.246731)
+target_position = Vector3(0, -10, 0)
+collision_mask = 2
+hit_from_inside = true
+hit_back_faces = false
+
+[node name="Ray2" type="RayCast3D" parent="CameraPivot/Node3D"]
+transform = Transform3D(0.984808, 0.173648, -7.5904e-09, 0, -4.37114e-08, -1, -0.173648, 0.984808, -4.30473e-08, 0, 0, 0)
+target_position = Vector3(0, -15, 0)
+collision_mask = 2
+hit_back_faces = false
+
+[node name="Ray3" type="RayCast3D" parent="CameraPivot/Node3D"]
+transform = Transform3D(1, 0, -1.74623e-10, 2.32831e-10, -2.98023e-08, 1, -1.16415e-10, -1, -1.49012e-07, -2.38651e-09, 1.43051e-06, -20)
+target_position = Vector3(0, -20, 0)
+collision_mask = 2
+hit_back_faces = false
+
+[node name="Ray4" type="RayCast3D" parent="CameraPivot/Node3D"]
+transform = Transform3D(0.98227, -0.187441, -0.00366547, -0.00290065, 0.00435451, -0.999986, 0.187454, 0.982267, 0.00373366, 0, 0, 0)
+target_position = Vector3(0, -15, 0)
+collision_mask = 2
+hit_back_faces = false
+
+[node name="Ray5" type="RayCast3D" parent="CameraPivot/Node3D"]
+transform = Transform3D(0.913545, -0.406737, 1.71131e-08, -1.49012e-08, -5.96046e-08, -1, 0.406737, 0.913546, 1.49012e-07, -0.251007, -0.0052042, 0.246731)
+target_position = Vector3(0, -10, 0)
+collision_mask = 2
+hit_back_faces = false
+
+[node name="UpDownPivot" type="Node3D" parent="CameraPivot"]
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot/UpDownPivot" node_paths=PackedStringArray("MyTarget")]
+transform = Transform3D(0.999998, -0.00204788, 0.000139574, 0.00170783, 0.867814, 0.496887, -0.00113869, -0.496886, 0.867815, 0.00121743, 8.42445, 15.1063)
 environment = SubResource("Environment_mva5q")
 attributes = SubResource("CameraAttributesPractical_ny233")
 fov = 73.0
 script = ExtResource("3_mva5q")
-MyTarget = NodePath("../../CameraManager")
+MyTarget = NodePath("../../../CameraManager")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.668956, 0.077715, 0.739228, -0.357106, 0.905828, 0.227928, -0.6519, -0.416456, 0.633712, 0, 0, 0)
@@ -66,7 +117,7 @@ shadow_enabled = true
 shadow_blur = 1.237
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
-transform = Transform3D(1456.94, 0, 0, 0, 1, 0, 0, 0, 356.729, 0, -0.7, 0)
+transform = Transform3D(192.404, 0, 0, 0, 1, 0, 0, 0, 356.729, 0, -0.7, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
 shape = SubResource("BoxShape3D_mva5q")
@@ -74,22 +125,96 @@ shape = SubResource("BoxShape3D_mva5q")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
 mesh = SubResource("BoxMesh_ny233")
 
-[node name="StaticBody3D2" type="StaticBody3D" parent="."]
-transform = Transform3D(49.0734, 0, 0, 0, 11.7281, 0, 0, 0, -15.0781, 39.4703, 4.33644, 3.94652)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
-shape = SubResource("BoxShape3D_mva5q")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D2"]
-mesh = SubResource("BoxMesh_ny233")
-
 [node name="StaticBody3D3" type="StaticBody3D" parent="."]
-transform = Transform3D(49.0734, 0, 0, 0, 11.7281, 0, 0, 0, -15.0781, -40.8406, 4.33644, 3.94652)
+transform = Transform3D(43.2401, 0, -7.13004, 0, 17.9499, 0, -23.2055, 0, -13.2858, -40.8406, 4.33644, 3.94652)
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D3"]
 shape = SubResource("BoxShape3D_mva5q")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D3"]
+layers = 3
 mesh = SubResource("BoxMesh_ny233")
+
+[node name="StaticBody3D4" type="StaticBody3D" parent="."]
+transform = Transform3D(43.2401, 0, -7.13004, 0, 17.9499, 0, -23.2055, 0, -13.2858, 35.1594, 7.81096, -17.0535)
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D4"]
+transform = Transform3D(1, 0, -1.49012e-08, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D4"]
+layers = 3
+mesh = SubResource("BoxMesh_ny233")
+
+[node name="StaticBody3D5" type="StaticBody3D" parent="."]
+transform = Transform3D(32.26, 0, -12.8162, 0, 32.2648, 0, -17.3129, 0, -23.881, 37.9256, 7.24035, -36.9776)
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D5"]
+transform = Transform3D(1, 0, -1.49012e-08, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D5"]
+layers = 3
+mesh = SubResource("BoxMesh_ny233")
+
+[node name="smallCube" type="StaticBody3D" parent="."]
+transform = Transform3D(3.29697, -5.29693e-07, 0, -2.8823e-07, -6.05898, 0, 0, 0, 2.00912, 6.37501, 1.17357, -0.0475969)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube"]
+shape = SubResource("BoxShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube"]
+layers = 2
+mesh = SubResource("BoxMesh_ny233")
+
+[node name="smallCube3" type="StaticBody3D" parent="."]
+transform = Transform3D(2.85526, -3.02949, -1.75643e-07, -1.77557e-07, 4.9421e-07, -2.00912, -1.64848, -5.24723, -8.78213e-08, 24.6027, -0.26242, -3.02446)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube3"]
+shape = SubResource("BoxShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube3"]
+layers = 2
+mesh = SubResource("BoxMesh_ny233")
+
+[node name="smallCube4" type="StaticBody3D" parent="."]
+transform = Transform3D(6.84015, -3.02949, 1.09529, 6.3989, 5.96046e-07, -1.56109, -3.94916, -5.24723, -0.632366, 29.8103, 3.64401, -7.65404)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube4"]
+shape = SubResource("BoxShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube4"]
+layers = 2
+mesh = SubResource("BoxMesh_ny233")
+
+[node name="smallCube5" type="StaticBody3D" parent="."]
+transform = Transform3D(8.78553, -3.02949, 0.110313, 0.644469, 7.15256e-07, -2.00507, -5.07233, -5.24723, -0.0636894, 43.8301, 5.69438, -11.4139)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube5"]
+shape = SubResource("BoxShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube5"]
+layers = 2
+mesh = SubResource("BoxMesh_ny233")
+
+[node name="smallCube2" type="StaticBody3D" parent="."]
+transform = Transform3D(-1, 8.74228e-08, 8.74228e-08, 8.74228e-08, 1, 0, -8.74228e-08, 7.64274e-15, -1, 89.941, 0.951203, 26.9559)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube2"]
+shape = SubResource("CapsuleShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube2"]
+layers = 2
+material_override = SubResource("StandardMaterial3D_ny233")
+mesh = SubResource("CapsuleMesh_i4phc")
+
+[node name="CameraHint" type="Node3D" parent="smallCube2"]
+metadata/Distance = 10.0
 
 [editable path="PlayerController"]

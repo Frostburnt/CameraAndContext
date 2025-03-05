@@ -1,10 +1,10 @@
 using Godot;
 using System;
 
-public partial class MyCamera : Camera3D
-{
+public partial class MyCamera : Camera3D{
     [Export]
     CameraTarget MyTarget;
+    
     public override void _Process(double delta)
     {
         base._Process(delta);
