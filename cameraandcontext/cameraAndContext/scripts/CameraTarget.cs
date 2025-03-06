@@ -33,10 +33,10 @@ Node3D MaxCamera;
 public Camera3D ActualCamera;
 float yRot, xRot;
 [Export]
-TalkToMe TargetInfo;
+public TalkToMe TargetInfo;
 [Export]
 Node3D LastCameraPos;
-public float DialogueFov = 10f;
+
 private float timer = 0.0f;
 
     public override void _Ready(){
@@ -53,7 +53,7 @@ private float timer = 0.0f;
         
         if(CurrentTarget == PlayerTarget){
             //Position = CurrentTarget.Position;
-            GD.Print(Position);
+            //GD.Print(Position);
             timer = Math.Clamp(timer -=(float)Delta * 0.5f, 0, 1);
             //following the player camera position will be relative to this, maybe interporlated on a curve
             //slerp angle towards character velocity vector pass this to camera 
@@ -73,7 +73,7 @@ private float timer = 0.0f;
             if(player.OrbitVector.Length() > 0.03f){
                 Pivot.Rotate(Vector3.Up, player.OrbitVector.X * -1 * (float)Delta * xSens);
                 
-                float xRot = Math.Clamp(UDPivot.GlobalRotation.X + player.OrbitVector.Y * (float)Delta * ySens, -0.3f, 0.6f);
+                float xRot = Math.Clamp(UDPivot.GlobalRotation.X + player.OrbitVector.Y * (float)Delta * ySens *-1, -0.3f, 0.6f);
                 UDPivot.Rotation = new Vector3(xRot, 0, 0);
                 interpolatePosition();
             }
@@ -84,7 +84,7 @@ private float timer = 0.0f;
                 obstacleAvoidance();
             }
             avoidCameraClipping();
-            
+            //GD.Print(ActualCamera.Fov);
         }
         else{
             Position = CurrentTarget.Position;
@@ -100,8 +100,10 @@ private float timer = 0.0f;
 
             //Pivot.GlobalRotation = Pivot.GlobalRotation.Slerp(CurrentTarget.GlobalRotation, (float)Delta);
             //avoidCameraClipping();
-            //ActualCamera.Fov =  ActualCamera.Fov + (DialogueFov - ActualCamera.Fov) * (float)Delta * 5;
-            
+            if(TargetInfo.MaxDistance - 2 > TargetInfo.distance){
+                ActualCamera.Fov =  TargetInfo.fov + (55 - TargetInfo.fov) * Math.Clamp((TargetInfo.distance - 2) / (TargetInfo.MaxDistance - 2 ),0,1);
+            }
+            GD.Print((TargetInfo.distance - 1) / (TargetInfo.MaxDistance - 1 ) + " and fov is " + ActualCamera.Fov);
             //ActualCamera.Fov = fov;
             
         }
@@ -134,7 +136,7 @@ private float timer = 0.0f;
             Position = CurrentTarget.GlobalPosition;
             Vector3 a = Pivot.Position;
             Vector3 b = Position;
-            GD.Print(Position);
+            //GD.Print(Position);
             
             //want to move to the position fast if it's a large distance
            
@@ -156,12 +158,13 @@ private float timer = 0.0f;
             colDist = (ray3.GetCollisionPoint() - Pivot.GlobalPosition).Length() + ray3.TargetPosition.Y;
            
             ActualCamera.TranslateObjectLocal(new Vector3(0,0,colDist));
-            //GD.Print(colDist);
+            GD.Print(colDist);
             }
             if(changeFOV){
             colDist = Math.Abs(colDist)/ 20.5f;      //set it relative to 1 to change fov based on
-            float fov = 80f + ( 55f - 80f) * colDist;
-            GD.Print(colDist);
+            float fov = 80f + ( 55f - 80f) * Math.Clamp(1/colDist, 0, 1);
+            
+            GD.Print(fov);
             ActualCamera.Fov = fov;
             }
             //lerp based on distance?

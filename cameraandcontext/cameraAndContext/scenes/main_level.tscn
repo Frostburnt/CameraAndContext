@@ -1,10 +1,12 @@
-[gd_scene load_steps=18 format=3 uid="uid://bs1lngi7ybvsi"]
+[gd_scene load_steps=20 format=3 uid="uid://bs1lngi7ybvsi"]
 
 [ext_resource type="PackedScene" uid="uid://dcyvuxmf01hb1" path="res://cameraAndContext/prefabs/PlayerController.tscn" id="1_g0a66"]
 [ext_resource type="Script" uid="uid://dn4bxmagj2da" path="res://cameraAndContext/scripts/CameraTarget.cs" id="2_mva5q"]
 [ext_resource type="Script" uid="uid://c0doathlxju6x" path="res://cameraAndContext/scripts/MyCamera.cs" id="3_mva5q"]
-[ext_resource type="BoxMesh" uid="uid://bv11crg6aqqju" path="res://cameraAndContext/scenes/Floor.tres" id="4_leple"]
+[ext_resource type="BoxMesh" uid="uid://bv11crg6aqqju" path="res://cameraAndContext/material/Floor.tres" id="4_leple"]
+[ext_resource type="Material" uid="uid://bl7007kxi27qn" path="res://cameraAndContext/material/Blue.tres" id="4_tfoui"]
 [ext_resource type="Script" uid="uid://bet6ncg1fxgdh" path="res://cameraAndContext/scenes/TalkToMe.cs" id="5_i4phc"]
+[ext_resource type="Material" uid="uid://nr403lo4xsws" path="res://cameraAndContext/material/purple.tres" id="6_lhdps"]
 
 [sub_resource type="Curve" id="Curve_mva5q"]
 _data = [Vector2(0, 0.448607), 0.0, -0.0399662, 0, 0, Vector2(1, 0.898876), 0.197566, 0.0, 0, 0]
@@ -50,6 +52,12 @@ albedo_color = Color(0.68303, 0.398843, 0.717107, 1)
 [node name="CharacterBody3D" parent="PlayerController" index="0" node_paths=PackedStringArray("helper")]
 helper = NodePath("../../CameraPivot/UpDownPivot/Camera3D")
 
+[node name="SpotLight3D" type="SpotLight3D" parent="PlayerController/CharacterBody3D/Pivot" index="1"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 3.36603, 3.83013)
+shadow_enabled = true
+shadow_blur = 10.0
+spot_range = 15.0
+
 [node name="CameraManager" type="Node3D" parent="." node_paths=PackedStringArray("PlayerTarget", "CurrentTarget", "Pivot", "UDPivot", "PCPivot", "player", "ray1", "ray2", "ray3", "ray4", "ray5", "MaxCamera", "ActualCamera", "TargetInfo", "LastCameraPos")]
 transform = Transform3D(1.47, 0, 2.57023e-07, 0, 1.47, 0, -2.57023e-07, 0, 1.47, 0, 1, 0)
 script = ExtResource("2_mva5q")
@@ -71,11 +79,12 @@ ySens = 2.0
 xSens = 2.0
 MaxCamera = NodePath("../CameraPivot/UpDownPivot/CameraMaxDist")
 ActualCamera = NodePath("../CameraPivot/UpDownPivot/Camera3D")
-TargetInfo = NodePath("../smallCube2")
+TargetInfo = NodePath("../StreetVendor2/smallCube4")
 LastCameraPos = NodePath("../CameraPivot/UpDownPivot/CameraMaxDist/LastCameraPos")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CameraManager"]
 transform = Transform3D(0.657904, 0, -0.741777, 0, 0.012, 0, 0.727683, 0, 0.670647, 0, 0, 0)
+visible = false
 mesh = SubResource("CapsuleMesh_mva5q")
 
 [node name="CameraPivot" type="Node3D" parent="."]
@@ -93,13 +102,13 @@ hit_back_faces = false
 
 [node name="Ray2" type="RayCast3D" parent="CameraPivot/Node3D"]
 transform = Transform3D(0.998864, 0.176126, -7.68341e-09, 7.45058e-09, -2.98023e-08, -1.01427, -0.176126, 0.998864, 0, 0, 0, 0)
-target_position = Vector3(0, -20.215, 0)
+target_position = Vector3(0, -17, 0)
 collision_mask = 2
 hit_back_faces = false
 
 [node name="Ray4" type="RayCast3D" parent="CameraPivot/Node3D"]
 transform = Transform3D(0.98227, -0.187441, -0.00366547, -0.00290065, 0.00435451, -0.999986, 0.187454, 0.982267, 0.00373366, 0, 0, 0)
-target_position = Vector3(0, -20.215, 0)
+target_position = Vector3(0, -17, 0)
 collision_mask = 2
 hit_back_faces = false
 
@@ -150,6 +159,7 @@ shadow_blur = 1.237
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(-397.404, 0, 0, 0, 1, 0, 0, 0, 356.729, 0, -0.7, 0)
 layers = 5
+material_override = ExtResource("4_tfoui")
 mesh = ExtResource("4_leple")
 skeleton = NodePath("")
 
@@ -180,6 +190,7 @@ mesh = ExtResource("4_leple")
 skeleton = NodePath("")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D5"]
+transform = Transform3D(1, 0, -2.98023e-08, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 collision_layer = 3
 collision_mask = 3
 
@@ -197,6 +208,32 @@ collision_layer = 3
 collision_mask = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D6/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="."]
+transform = Transform3D(31.9505, 0, 0.936209, 0, 19.8925, 0, 0.992434, 0, -30.1417, -43.4063, 8.65698, -55.75)
+layers = 3
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D7"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D7/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="."]
+transform = Transform3D(27.1738, 0, 15.8816, 0, 19.8925, 0, 16.8347, 0, -25.6354, 38.8584, 8.65698, -61.1901)
+layers = 3
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D8"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D8/StaticBody3D"]
 shape = SubResource("ConvexPolygonShape3D_psmfg")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
@@ -248,33 +285,160 @@ shape = SubResource("BoxShape3D_mva5q")
 layers = 2
 mesh = ExtResource("4_leple")
 
-[node name="smallCube2" type="StaticBody3D" parent="." node_paths=PackedStringArray("Friend", "CameraController", "ActualTarget")]
-transform = Transform3D(-1, 8.74228e-08, 8.74228e-08, 8.74228e-08, 1, 0, -8.74228e-08, 7.64274e-15, -1, 4.07297, 0.951211, -38.1156)
-script = ExtResource("5_i4phc")
-Friend = NodePath("../PlayerController/CharacterBody3D")
-CameraController = NodePath("../CameraManager")
-MaxDistance = 15.0
-ActualTarget = NodePath("Node3D")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube2"]
-shape = SubResource("CapsuleShape3D_mva5q")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube2"]
-layers = 2
-material_override = SubResource("StandardMaterial3D_ny233")
-mesh = SubResource("CapsuleMesh_i4phc")
-
-[node name="CameraHint" type="Node3D" parent="smallCube2"]
-metadata/Distance = 10.0
-
-[node name="Node3D" type="Node3D" parent="smallCube2"]
-transform = Transform3D(-0.188258, 0.210858, 0.959218, 0.21322, 0.962162, -0.169657, -0.958695, 0.172585, -0.226094, 1.70859, -0.918077, -2.12154)
-
 [node name="SpotLight3D" type="SpotLight3D" parent="."]
 transform = Transform3D(0.99821, -0.0574983, 0.0164676, 0.0136919, 0.487702, 0.872903, -0.0582217, -0.871115, 0.487616, 3.77164, 26.8105, -26.4976)
 light_color = Color(0.460622, 0.770976, 0.847893, 1)
 light_energy = 10.549
 spot_range = 43.5944
 spot_angle = 25.0031
+
+[node name="StreetVendor" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23, 0, -55)
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="StreetVendor"]
+transform = Transform3D(1, 0, 0, 0, 5.2, 0, 0, 0, 5.4, -0.868393, 1, 0)
+layers = 5
+material_override = ExtResource("6_lhdps")
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="StreetVendor/MeshInstance3D7"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StreetVendor/MeshInstance3D7/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="StreetVendor"]
+transform = Transform3D(1, 0, 0, 0, 5.2, 0, 0, 0, 3.78, 2.13161, -2, -0.243999)
+layers = 5
+material_override = ExtResource("6_lhdps")
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="StreetVendor/MeshInstance3D8"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StreetVendor/MeshInstance3D8/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="smallCube4" type="StaticBody3D" parent="StreetVendor" node_paths=PackedStringArray("Friend", "CameraController", "ActualTarget")]
+transform = Transform3D(-1, 8.74228e-08, 8.74228e-08, 8.74228e-08, 1, 0, -8.74228e-08, 7.64274e-15, -1, 1.07297, 0.95121, -0.115601)
+script = ExtResource("5_i4phc")
+Friend = NodePath("../../PlayerController/CharacterBody3D")
+CameraController = NodePath("../../CameraManager")
+MaxDistance = 15.0
+ActualTarget = NodePath("Node3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StreetVendor/smallCube4"]
+shape = SubResource("CapsuleShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StreetVendor/smallCube4"]
+layers = 2
+material_override = SubResource("StandardMaterial3D_ny233")
+mesh = SubResource("CapsuleMesh_i4phc")
+
+[node name="CameraHint" type="Node3D" parent="StreetVendor/smallCube4"]
+metadata/Distance = 10.0
+
+[node name="Node3D" type="Node3D" parent="StreetVendor/smallCube4"]
+transform = Transform3D(-0.188258, -0.0445908, 0.981107, 0.21322, 0.973288, 0.0851497, -0.958695, 0.225222, -0.173722, 1.70859, -0.918077, -2.12154)
+
+[node name="StreetVendor2" type="Node3D" parent="."]
+transform = Transform3D(-0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 9.50575, 0, -26.9882)
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="StreetVendor2"]
+transform = Transform3D(1, 0, 0, 0, 5.2, 0, 0, 0, 5.4, -0.868393, 1, 0)
+layers = 5
+material_override = ExtResource("6_lhdps")
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="StreetVendor2/MeshInstance3D7"]
+transform = Transform3D(1, 0, 1.19209e-07, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StreetVendor2/MeshInstance3D7/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="StreetVendor2"]
+transform = Transform3D(1, 0, 0, 0, 5.2, 0, 0, 0, 3.78, 2.13161, -2, -0.243999)
+layers = 5
+material_override = ExtResource("6_lhdps")
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="StreetVendor2/MeshInstance3D8"]
+transform = Transform3D(1, 0, 5.96046e-08, 0, 1, 0, -7.45058e-09, 0, 1, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StreetVendor2/MeshInstance3D8/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="smallCube4" type="StaticBody3D" parent="StreetVendor2" node_paths=PackedStringArray("Friend", "CameraController", "ActualTarget")]
+transform = Transform3D(-1, 8.74228e-08, 8.74228e-08, 8.74228e-08, 1, 0, -8.74228e-08, 7.64274e-15, -1, 1.07297, 0.95121, -0.115601)
+script = ExtResource("5_i4phc")
+Friend = NodePath("../../PlayerController/CharacterBody3D")
+CameraController = NodePath("../../CameraManager")
+MaxDistance = 15.0
+ActualTarget = NodePath("Node3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StreetVendor2/smallCube4"]
+shape = SubResource("CapsuleShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StreetVendor2/smallCube4"]
+layers = 2
+material_override = SubResource("StandardMaterial3D_ny233")
+mesh = SubResource("CapsuleMesh_i4phc")
+
+[node name="CameraHint" type="Node3D" parent="StreetVendor2/smallCube4"]
+metadata/Distance = 10.0
+
+[node name="Node3D" type="Node3D" parent="StreetVendor2/smallCube4"]
+transform = Transform3D(1, 0, 0, 0, 0.889417, -0.457098, 0, 0.457098, 0.889417, 1.70859, -0.918077, -2.12154)
+
+[node name="StreetVendor3" type="Node3D" parent="."]
+transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, 10.5058, 0, -69.9882)
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="StreetVendor3"]
+transform = Transform3D(1, 0, 0, 0, 5.2, 0, 0, 0, 5.4, -0.868393, 1, 0)
+layers = 5
+material_override = ExtResource("6_lhdps")
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="StreetVendor3/MeshInstance3D7"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StreetVendor3/MeshInstance3D7/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="StreetVendor3"]
+transform = Transform3D(1, 0, 0, 0, 5.2, 0, 0, 0, 3.78, 2.13161, -2, -0.243999)
+layers = 5
+material_override = ExtResource("6_lhdps")
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="StreetVendor3/MeshInstance3D8"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StreetVendor3/MeshInstance3D8/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="smallCube4" type="StaticBody3D" parent="StreetVendor3" node_paths=PackedStringArray("Friend", "CameraController", "ActualTarget")]
+transform = Transform3D(-1, 8.74228e-08, 8.74228e-08, 8.74228e-08, 1, 0, -8.74228e-08, 7.64274e-15, -1, 1.07297, 0.95121, -0.115601)
+script = ExtResource("5_i4phc")
+Friend = NodePath("../../PlayerController/CharacterBody3D")
+CameraController = NodePath("../../CameraManager")
+MaxDistance = 15.0
+ActualTarget = NodePath("Node3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StreetVendor3/smallCube4"]
+shape = SubResource("CapsuleShape3D_mva5q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StreetVendor3/smallCube4"]
+layers = 2
+material_override = SubResource("StandardMaterial3D_ny233")
+mesh = SubResource("CapsuleMesh_i4phc")
+
+[node name="CameraHint" type="Node3D" parent="StreetVendor3/smallCube4"]
+metadata/Distance = 10.0
+
+[node name="Node3D" type="Node3D" parent="StreetVendor3/smallCube4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.70859, -0.918077, -2.12154)
 
 [editable path="PlayerController"]

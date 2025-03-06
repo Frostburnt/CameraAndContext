@@ -16,9 +16,11 @@ public partial class TalkToMe : StaticBody3D{
        
         distance =  (GlobalPosition - Friend.GlobalPosition).Length();
         if(distance < MaxDistance){
+            
             CameraController.CurrentTarget = ActualTarget;
             ActualTarget.GlobalPosition = GlobalPosition.Lerp(Friend.GlobalPosition, Math.Clamp(distance/MaxDistance,0f,1f));
-            CameraController.ActualCamera.Fov =  CameraController.ActualCamera.Fov  + ( fov - CameraController.ActualCamera.Fov ) * (float)delta;
+            //CameraController.ActualCamera.Fov =  CameraController.ActualCamera.Fov  + ( fov - CameraController.ActualCamera.Fov ) * (float)delta;
+            CameraController.TargetInfo = this;
         }
         else if(distance > MaxDistance && distance < MaxDistance + 1){
             CameraController.CurrentTarget = CameraController.PlayerTarget;
