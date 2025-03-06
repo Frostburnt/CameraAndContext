@@ -83,10 +83,10 @@ public float DialogueFov = 10f;
             
         }
         else{
-            float intAmount = Math.Clamp((TargetInfo.MaxDistance - TargetInfo.distance), 0, 1);
-            ActualCamera.GlobalPosition = LastCameraPos.GlobalPosition.Slerp(CurrentTarget.GlobalPosition, intAmount);
-            ActualCamera.GlobalRotation = LastCameraPos.GlobalRotation.Slerp(CurrentTarget.GlobalRotation, intAmount);
-
+            // float intAmount = Math.Clamp((TargetInfo.MaxDistance - TargetInfo.distance), 0, 1);
+            // ActualCamera.GlobalPosition = LastCameraPos.GlobalPosition.Slerp(CurrentTarget.GlobalPosition, intAmount);
+            // ActualCamera.GlobalRotation = LastCameraPos.GlobalRotation.Slerp(CurrentTarget.GlobalRotation, intAmount);
+            //Pivot.Transform = Pivot.Transform.InterpolateWith();
 
 
             //Pivot.GlobalRotation = Pivot.GlobalRotation.Slerp(CurrentTarget.GlobalRotation, (float)Delta);
@@ -119,8 +119,7 @@ public float DialogueFov = 10f;
             //want to move to the position fast if it's a large distance
             float iWeight = InterpolationRate.Sample(distance ) * iOffset* (float)Delta;
             Pivot.Position = Pivot.Position.Lerp(Position, iWeight * factor);
-            LastCameraPos.GlobalPosition = ActualCamera.GlobalPosition;
-            LastCameraPos.GlobalRotation = ActualCamera.GlobalRotation;
+
         }
 
 
