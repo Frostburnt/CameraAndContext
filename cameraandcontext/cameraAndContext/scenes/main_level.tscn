@@ -1,8 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://bs1lngi7ybvsi"]
+[gd_scene load_steps=18 format=3 uid="uid://bs1lngi7ybvsi"]
 
 [ext_resource type="PackedScene" uid="uid://dcyvuxmf01hb1" path="res://cameraAndContext/prefabs/PlayerController.tscn" id="1_g0a66"]
 [ext_resource type="Script" uid="uid://dn4bxmagj2da" path="res://cameraAndContext/scripts/CameraTarget.cs" id="2_mva5q"]
 [ext_resource type="Script" uid="uid://c0doathlxju6x" path="res://cameraAndContext/scripts/MyCamera.cs" id="3_mva5q"]
+[ext_resource type="BoxMesh" uid="uid://bv11crg6aqqju" path="res://cameraAndContext/scenes/Floor.tres" id="4_leple"]
+[ext_resource type="Script" uid="uid://bet6ncg1fxgdh" path="res://cameraAndContext/scenes/TalkToMe.cs" id="5_i4phc"]
 
 [sub_resource type="Curve" id="Curve_mva5q"]
 _data = [Vector2(0, 0.448607), 0.0, -0.0399662, 0, 0, Vector2(1, 0.898876), 0.197566, 0.0, 0, 0]
@@ -20,9 +22,19 @@ ssao_enabled = true
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ny233"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_mva5q"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_mva5q"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_ny233"]
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_xb43g"]
+points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_psmfg"]
+points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_leple"]
+points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mva5q"]
+size = Vector3(1, 1.02051, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_mva5q"]
 
@@ -38,7 +50,7 @@ albedo_color = Color(0.68303, 0.398843, 0.717107, 1)
 [node name="CharacterBody3D" parent="PlayerController" index="0" node_paths=PackedStringArray("helper")]
 helper = NodePath("../../CameraPivot/UpDownPivot/Camera3D")
 
-[node name="CameraManager" type="Node3D" parent="." node_paths=PackedStringArray("PlayerTarget", "CurrentTarget", "Pivot", "UDPivot", "PCPivot", "player", "ray1", "ray2", "ray3", "ray4", "ray5")]
+[node name="CameraManager" type="Node3D" parent="." node_paths=PackedStringArray("PlayerTarget", "CurrentTarget", "Pivot", "UDPivot", "PCPivot", "player", "ray1", "ray2", "ray3", "ray4", "ray5", "MaxCamera", "ActualCamera", "TargetInfo", "LastCameraPos")]
 transform = Transform3D(1.47, 0, 2.57023e-07, 0, 1.47, 0, -2.57023e-07, 0, 1.47, 0, 1, 0)
 script = ExtResource("2_mva5q")
 PlayerTarget = NodePath("../PlayerController/CharacterBody3D/CameraHelper")
@@ -52,11 +64,15 @@ iOffset = 8.0
 player = NodePath("../PlayerController/CharacterBody3D")
 ray1 = NodePath("../CameraPivot/Node3D/Ray1")
 ray2 = NodePath("../CameraPivot/Node3D/Ray2")
-ray3 = NodePath("../CameraPivot/Node3D/Ray3")
+ray3 = NodePath("../CameraPivot/UpDownPivot/CameraMaxDist/Ray3")
 ray4 = NodePath("../CameraPivot/Node3D/Ray4")
 ray5 = NodePath("../CameraPivot/Node3D/Ray5")
 ySens = 2.0
 xSens = 2.0
+MaxCamera = NodePath("../CameraPivot/UpDownPivot/CameraMaxDist")
+ActualCamera = NodePath("../CameraPivot/UpDownPivot/Camera3D")
+TargetInfo = NodePath("../smallCube2")
+LastCameraPos = NodePath("../CameraPivot/UpDownPivot/CameraMaxDist/LastCameraPos")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CameraManager"]
 transform = Transform3D(0.657904, 0, -0.741777, 0, 0.012, 0, 0.727683, 0, 0.670647, 0, 0, 0)
@@ -69,21 +85,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 transform = Transform3D(0.999998, -0.00204788, 0.000139574, 0.00170783, 0.867814, 0.496887, -0.00113869, -0.496886, 0.867815, 0.00149658, 9.41822, 16.8419)
 
 [node name="Ray1" type="RayCast3D" parent="CameraPivot/Node3D"]
-transform = Transform3D(0.913546, 0.406737, -1.78115e-08, 8.9407e-08, -5.96046e-08, -1, -0.406737, 0.913546, 1.49012e-07, -0.251007, -0.0052042, 0.246731)
-target_position = Vector3(0, -10, 0)
+transform = Transform3D(0.913546, 0.406737, -1.78115e-08, 8.9407e-08, -5.96046e-08, -1, -0.406737, 0.913546, 1.49012e-07, 0, 0, 0)
+target_position = Vector3(0, -12, 0)
 collision_mask = 2
 hit_from_inside = true
 hit_back_faces = false
 
 [node name="Ray2" type="RayCast3D" parent="CameraPivot/Node3D"]
-transform = Transform3D(0.984808, 0.173648, -7.5904e-09, 0, -4.37114e-08, -1, -0.173648, 0.984808, -4.30473e-08, 0, 0, 0)
+transform = Transform3D(0.998864, 0.176126, -7.68341e-09, 7.45058e-09, -2.98023e-08, -1.01427, -0.176126, 0.998864, 0, 0, 0, 0)
 target_position = Vector3(0, -15, 0)
-collision_mask = 2
-hit_back_faces = false
-
-[node name="Ray3" type="RayCast3D" parent="CameraPivot/Node3D"]
-transform = Transform3D(1, 0, -1.74623e-10, 2.32831e-10, -2.98023e-08, 1, -1.16415e-10, -1, -1.49012e-07, -2.38651e-09, 1.43051e-06, -20)
-target_position = Vector3(0, -20, 0)
 collision_mask = 2
 hit_back_faces = false
 
@@ -94,20 +104,35 @@ collision_mask = 2
 hit_back_faces = false
 
 [node name="Ray5" type="RayCast3D" parent="CameraPivot/Node3D"]
-transform = Transform3D(0.913545, -0.406737, 1.71131e-08, -1.49012e-08, -5.96046e-08, -1, 0.406737, 0.913546, 1.49012e-07, -0.251007, -0.0052042, 0.246731)
-target_position = Vector3(0, -10, 0)
+transform = Transform3D(0.913545, -0.406737, 1.71131e-08, -1.49012e-08, -5.96046e-08, -1, 0.406737, 0.913546, 1.49012e-07, 0, 0, 0)
+target_position = Vector3(0, -12, 0)
 collision_mask = 2
 hit_back_faces = false
 
 [node name="UpDownPivot" type="Node3D" parent="CameraPivot"]
 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot/UpDownPivot" node_paths=PackedStringArray("MyTarget")]
-transform = Transform3D(0.999998, -0.00204788, 0.000139574, 0.00170783, 0.867814, 0.496887, -0.00113869, -0.496886, 0.867815, 0.00121743, 8.42445, 15.1063)
+transform = Transform3D(1, 0, 0, 0, 0.866026, 0.5, 0, -0.5, 0.866025, 0, 8.5, 15)
 environment = SubResource("Environment_mva5q")
 attributes = SubResource("CameraAttributesPractical_ny233")
-fov = 73.0
 script = ExtResource("3_mva5q")
 MyTarget = NodePath("../../../CameraManager")
+
+[node name="CameraMaxDist" type="Node3D" parent="CameraPivot/UpDownPivot"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 8.5, 15)
+
+[node name="Ray3" type="RayCast3D" parent="CameraPivot/UpDownPivot/CameraMaxDist"]
+transform = Transform3D(1, 0, 0, 0, 0.146566, 0.989201, 0, -0.989201, 0.146567, 3.10247e-08, 0.866035, -17.5)
+target_position = Vector3(0, -20.5, 0)
+collision_mask = 6
+hit_from_inside = true
+
+[node name="QuickerThanDebug3DDontJudgeMe" type="MeshInstance3D" parent="CameraPivot/UpDownPivot/CameraMaxDist/Ray3"]
+transform = Transform3D(-0.548905, 3.79278, 0, -0.0869381, -23.9467, 0, 0, 0, -0.114665, -1.7395, 2.59794, -0.696482)
+visible = false
+mesh = SubResource("CylinderMesh_mva5q")
+
+[node name="LastCameraPos" type="Node3D" parent="CameraPivot/UpDownPivot/CameraMaxDist"]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.668956, 0.077715, 0.739228, -0.357106, 0.905828, 0.227928, -0.6519, -0.416456, 0.633712, 0, 0, 0)
@@ -116,39 +141,83 @@ light_energy = 1.325
 shadow_enabled = true
 shadow_blur = 1.237
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-transform = Transform3D(192.404, 0, 0, 0, 1, 0, 0, 0, 356.729, 0, -0.7, 0)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-397.404, 0, 0, 0, 1, 0, 0, 0, 356.729, 0, -0.7, 0)
+layers = 5
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("BoxShape3D_mva5q")
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+collision_layer = 5
+collision_mask = 5
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-mesh = SubResource("BoxMesh_ny233")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_xb43g")
 
-[node name="StaticBody3D3" type="StaticBody3D" parent="."]
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
 transform = Transform3D(43.2401, 0, -7.13004, 0, 17.9499, 0, -23.2055, 0, -13.2858, -40.8406, 4.33644, 3.94652)
+layers = 3
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D2"]
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D3"]
-shape = SubResource("BoxShape3D_mva5q")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D2/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D3"]
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="."]
+transform = Transform3D(28.1662, 0, -7.13004, 0, 19.8925, 0, -15.1158, 0, -13.2858, -23.0875, 8.65698, 37.0268)
 layers = 3
-mesh = SubResource("BoxMesh_ny233")
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
 
-[node name="StaticBody3D4" type="StaticBody3D" parent="."]
-transform = Transform3D(43.2401, 0, -7.13004, 0, 17.9499, 0, -23.2055, 0, -13.2858, 35.1594, 7.81096, -17.0535)
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D5"]
 collision_layer = 3
 collision_mask = 3
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D4"]
-transform = Transform3D(1, 0, -1.49012e-08, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("BoxShape3D_mva5q")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D5/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D4"]
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="."]
+transform = Transform3D(28.1662, 0, -7.13004, 0, 19.8925, 0, -15.1158, 0, -13.2858, -29.4739, 8.65698, -18.6288)
 layers = 3
-mesh = SubResource("BoxMesh_ny233")
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D6"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D6/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+transform = Transform3D(43.2401, 4.40285, -6.09581, 9.53674e-07, 15.3462, 7.82123, -23.2055, 8.20408, -11.3587, -33.7731, -4.72426, -8.41433)
+layers = 5
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D3"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D3/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_psmfg")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="."]
+transform = Transform3D(43.2401, 0, -7.13004, 0, 17.9499, 0, -23.2055, 0, -13.2858, 35.1594, 5.90928, -17.0535)
+layers = 3
+mesh = ExtResource("4_leple")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D4"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D4/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_leple")
 
 [node name="StaticBody3D5" type="StaticBody3D" parent="."]
 transform = Transform3D(32.26, 0, -12.8162, 0, 32.2648, 0, -17.3129, 0, -23.881, 37.9256, 7.24035, -36.9776)
@@ -161,7 +230,7 @@ shape = SubResource("BoxShape3D_mva5q")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D5"]
 layers = 3
-mesh = SubResource("BoxMesh_ny233")
+mesh = ExtResource("4_leple")
 
 [node name="smallCube" type="StaticBody3D" parent="."]
 transform = Transform3D(3.29697, -5.29693e-07, 0, -2.8823e-07, -6.05898, 0, 0, 0, 2.00912, 6.37501, 1.17357, -0.0475969)
@@ -171,40 +240,15 @@ shape = SubResource("BoxShape3D_mva5q")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube"]
 layers = 2
-mesh = SubResource("BoxMesh_ny233")
+mesh = ExtResource("4_leple")
 
-[node name="smallCube3" type="StaticBody3D" parent="."]
-transform = Transform3D(2.85526, -3.02949, -1.75643e-07, -1.77557e-07, 4.9421e-07, -2.00912, -1.64848, -5.24723, -8.78213e-08, 24.6027, -0.26242, -3.02446)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube3"]
-shape = SubResource("BoxShape3D_mva5q")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube3"]
-layers = 2
-mesh = SubResource("BoxMesh_ny233")
-
-[node name="smallCube4" type="StaticBody3D" parent="."]
-transform = Transform3D(6.84015, -3.02949, 1.09529, 6.3989, 5.96046e-07, -1.56109, -3.94916, -5.24723, -0.632366, 29.8103, 3.64401, -7.65404)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube4"]
-shape = SubResource("BoxShape3D_mva5q")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube4"]
-layers = 2
-mesh = SubResource("BoxMesh_ny233")
-
-[node name="smallCube5" type="StaticBody3D" parent="."]
-transform = Transform3D(8.78553, -3.02949, 0.110313, 0.644469, 7.15256e-07, -2.00507, -5.07233, -5.24723, -0.0636894, 43.8301, 5.69438, -11.4139)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube5"]
-shape = SubResource("BoxShape3D_mva5q")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="smallCube5"]
-layers = 2
-mesh = SubResource("BoxMesh_ny233")
-
-[node name="smallCube2" type="StaticBody3D" parent="."]
-transform = Transform3D(-1, 8.74228e-08, 8.74228e-08, 8.74228e-08, 1, 0, -8.74228e-08, 7.64274e-15, -1, 89.941, 0.951203, 26.9559)
+[node name="smallCube2" type="StaticBody3D" parent="." node_paths=PackedStringArray("Friend", "CameraController", "ActualTarget")]
+transform = Transform3D(-1, 8.74228e-08, 8.74228e-08, 8.74228e-08, 1, 0, -8.74228e-08, 7.64274e-15, -1, 1.6498, 0.951211, -69.2231)
+script = ExtResource("5_i4phc")
+Friend = NodePath("../PlayerController/CharacterBody3D")
+CameraController = NodePath("../CameraManager")
+MaxDistance = 15.0
+ActualTarget = NodePath("Node3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="smallCube2"]
 shape = SubResource("CapsuleShape3D_mva5q")
@@ -216,5 +260,14 @@ mesh = SubResource("CapsuleMesh_i4phc")
 
 [node name="CameraHint" type="Node3D" parent="smallCube2"]
 metadata/Distance = 10.0
+
+[node name="Node3D" type="Node3D" parent="smallCube2"]
+transform = Transform3D(-0.379682, -0.640745, -0.6673, 2.98023e-08, 0.721314, -0.692609, 0.925117, -0.262971, -0.273869, 0.800187, -0.728339, -0.854424)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(0.787688, 0, -0.616074, 0.616074, -4.37114e-08, 0.787688, -2.69295e-08, -1, -3.44309e-08, 3.77164, 26.8105, -26.4976)
+light_color = Color(0.460622, 0.770976, 0.847893, 1)
+light_energy = 10.549
+spot_range = 47.167
 
 [editable path="PlayerController"]

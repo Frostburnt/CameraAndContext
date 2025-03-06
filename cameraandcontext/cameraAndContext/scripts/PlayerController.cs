@@ -28,8 +28,15 @@ public partial class PlayerController : CharacterBody3D{
     public override void _Ready()
     {
         LastValidAngle = helper.GlobalRotation.Y;
+        
     }
     //bool IsNotJumping;
+    	//private void OnArea3dAreaEntered(Node3D body){
+            
+		//GD.Print("bye");
+	private  void Fortnite(){
+        
+    }
     public override void _Process(double delta){
         //this will likely still be pretty basic
         JumpTimer += (float)delta;

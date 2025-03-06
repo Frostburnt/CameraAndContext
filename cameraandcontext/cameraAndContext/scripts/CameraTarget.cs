@@ -1,10 +1,12 @@
 using Godot;
 using System;
+using System.Runtime;
 using System.Security.AccessControl;
 
 public partial class CameraTarget : Node3D{
 [Export]
 public Node3D PlayerTarget;
+
 [Export]
 public Node3D CurrentTarget;
 [Export]
@@ -25,32 +27,45 @@ PlayerController player;
     RayCast3D ray1, ray2, ray3, ray4, ray5;
 [Export]
 float ySens, xSens;
+[Export]
+Node3D MaxCamera;
+[Export]
+Camera3D ActualCamera;
 float yRot, xRot;
-    public override void _PhysicsProcess(double delta)
-    {
-        base._PhysicsProcess(delta);
+[Export]
+TalkToMe TargetInfo;
+[Export]
+Node3D LastCameraPos;
+public float DialogueFov = 10f;
+
+    public override void _Ready(){
+        
     }
+
+
     public override void _Process(double Delta){    //dynamic camera
+
+        
         //this will be a look target for whisker raycast
         //aswell as just a target for the camera to look at
         //two states following player and hint. in an actual game this could be expanded more
-        interpolatePosition();
+        
         if(CurrentTarget == PlayerTarget){
             //following the player camera position will be relative to this, maybe interporlated on a curve
             //slerp angle towards character velocity vector pass this to camera 
             //add a max vertical clamp, maybe changed based on the normal vector under the players feet
             //maybe increase FOV based on distance?
-            if(ray1.IsColliding() || ray2.IsColliding()){//camera obscurance avoidance left
-                GD.Print("Left");
-            }
-            else if( ray4.IsColliding()|| ray5.IsColliding()) {//camera obscurance avoidance right
-                GD.Print("Right");
-            }
+            // if(ray1.IsColliding() || ray2.IsColliding()){//camera obscurance avoidance left
+            //     GD.Print("Left");
+            // }
+            // else if( ray4.IsColliding()|| ray5.IsColliding()) {//camera obscurance avoidance right
+            //     GD.Print("Right");
+            // }
             
-            else{
-                
+            // else{
+            interpolatePosition();
 
-            }
+            // }
             if(player.OrbitVector.Length() > 0.03f){
                 Pivot.Rotate(Vector3.Up, player.OrbitVector.X * -1 * (float)Delta * xSens);
                 
@@ -62,8 +77,24 @@ float yRot, xRot;
                 noOrbit();
             }
             else{
-                unHide();
+                obstacleAvoidance();
             }
+            avoidCameraClipping();
+            
+        }
+        else{
+            float intAmount = Math.Clamp((TargetInfo.MaxDistance - TargetInfo.distance), 0, 1);
+            ActualCamera.GlobalPosition = LastCameraPos.GlobalPosition.Slerp(CurrentTarget.GlobalPosition, intAmount);
+            ActualCamera.GlobalRotation = LastCameraPos.GlobalRotation.Slerp(CurrentTarget.GlobalRotation, intAmount);
+
+
+
+            //Pivot.GlobalRotation = Pivot.GlobalRotation.Slerp(CurrentTarget.GlobalRotation, (float)Delta);
+            //avoidCameraClipping();
+            //ActualCamera.Fov =  ActualCamera.Fov + (DialogueFov - ActualCamera.Fov) * (float)Delta * 5;
+            
+            //ActualCamera.Fov = fov;
+            
         }
         
         
@@ -73,7 +104,7 @@ float yRot, xRot;
             
             float qWeight = InterpolationRate.Sample(Pivot.Quaternion.AngleTo(Quaternion)) * qOffset* (float)Delta;//replace this.quaternion with a new one based on the velocity vector
             Pivot.Quaternion = Pivot.Quaternion.Slerp(Quaternion, qWeight);
-            unHide();
+            obstacleAvoidance();
 
            // Rotation = newVector3(oldX, Rotation.Y, Rotation.Z);
         }
@@ -88,6 +119,8 @@ float yRot, xRot;
             //want to move to the position fast if it's a large distance
             float iWeight = InterpolationRate.Sample(distance ) * iOffset* (float)Delta;
             Pivot.Position = Pivot.Position.Lerp(Position, iWeight * factor);
+            LastCameraPos.GlobalPosition = ActualCamera.GlobalPosition;
+            LastCameraPos.GlobalRotation = ActualCamera.GlobalRotation;
         }
 
 
@@ -96,9 +129,32 @@ float yRot, xRot;
                 //this will likely be distance based instead of triggers
                 //will read the properties of the current target, fov location, etc and interpolate to them
                 //potentially disable certain render layers to hide stuff, if for instance entering a shop and going into a top down view then hiding the roof    
-            
+        void avoidCameraClipping(){
+            //based on ray 3, looking back at the camera.. we want to adjust our cameras distance to the pivot
+            ActualCamera.Position = MaxCamera.Position;
+            float colDist = -20.5f;
+            if(ray3.IsColliding()){
+            colDist = (ray3.GetCollisionPoint() - Pivot.GlobalPosition).Length() + ray3.TargetPosition.Y;
+           
+            ActualCamera.TranslateObjectLocal(new Vector3(0,0,colDist));
+            colDist = Math.Abs(colDist)/ 20.5f;      //set it relative to 1 to change fov based on
+            //GD.Print(colDist);
+            float fov = 80f + ( 55f - 80f) * colDist;
+            //GD.Print(fov);
+            ActualCamera.Fov = fov;
+            //lerp based on distance?
 
-        void unHide(){
+
+
+            }
+
+
+
+
+
+        }    
+
+        void obstacleAvoidance(){
             //assume we can only have one ray collision
             //ray 3 is middle ray, this is used for checking for camera collisions
             bool found = false;
@@ -124,64 +180,8 @@ float yRot, xRot;
                 Temp = Temp.LookingAt(Obstacle);
                 Pivot.Quaternion = Pivot.Quaternion.Slerp(Temp.Basis.GetRotationQuaternion(), (float)Delta * 0.2f);
                 Pivot.Rotation = new (0, Pivot.Rotation.Y, 0);          //pivot should only rotate on the Y axis
-
             }
-           
-           
-           
-           
-           
-           
-           
-           
-           
-           
-           
-           
-           
-            
-            // Obstacle = new Variant(); 
-            //Vector3 ObjPosition;
-    
-            
-            
-
-
-
-
-
-
-
-
-            //GD.Print(ObjPosition);
-            //then we move camera based on relative position to that object
-            // if(ray1.IsColliding()){//left big
-            //     Transform3D Temp = Pivot.Transform;
-            //     Temp = Temp.LookingAt(Temp.Basis.Column0);
-            //     Pivot.Quaternion = Pivot.Quaternion.Slerp(Temp.Basis.GetRotationQuaternion(), (float)Delta * 1.0f);
-            //    //Pivot.LookAt(Pivot.Basis.X);
-            //     //Pivot.Rotate(Vector3.Up, 0.418879f * (float)Delta * 4);
-            // }
-            // else if(ray2.IsColliding()){//left small
-            //     Transform3D Temp = Pivot.Transform;
-            //     Temp = Temp.LookingAt(Temp.Basis.Column0);
-            //     Pivot.Quaternion = Pivot.Quaternion.Slerp(Temp.Basis.GetRotationQuaternion(), (float)Delta * 0.7f);
-            // }
-            // else if(ray5.IsColliding()){//right big
-            //     Transform3D Temp = Pivot.Transform;
-            //     Temp = Temp.LookingAt(Temp.Basis.Column0 * -1);
-            //     Pivot.Quaternion = Pivot.Quaternion.Slerp(Temp.Basis.GetRotationQuaternion(), (float)Delta * 0.7f);
-            // }
-            // else if(ray4.IsColliding()){
-            //     Transform3D Temp = Pivot.Transform;
-            //     Temp = Temp.LookingAt(Temp.Basis.Column0 * -1);
-            //     Pivot.Quaternion = Pivot.Quaternion.Slerp(Temp.Basis.GetRotationQuaternion(), (float)Delta * 1.0f);
-            // }
         }
-
-        
-
-
     }
 
 }
